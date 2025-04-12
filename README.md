@@ -44,5 +44,7 @@ Read about [k6 options](https://grafana.com/docs/k6/latest/using-k6/k6-options/)
 ## Potential improvements
 
 - [ ] include more methods
+- [ ] Support write methods: eth_sendRawTransaction, Filecoin.MpoolPush
+- [ ] Support subscription methods: ChainNotify
 - [ ] rewrite in TypeScript
 - [ ] visualize results locally

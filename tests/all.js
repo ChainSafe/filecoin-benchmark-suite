@@ -1,5 +1,3 @@
-import http from "k6/http";
-
 import { allMethods } from "../methods/index.js";
 import { sendRpcRequest, assertSuccess } from "../utils/rpc.js";
 import { regularBenchmarkParams } from "../utils/benchmark_params.js";

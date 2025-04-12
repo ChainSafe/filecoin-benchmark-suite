@@ -1,7 +1,4 @@
-import { check } from "k6";
-import http from "k6/http";
-
-import { ethChainId, ethGasPrice } from "../methods/index.js";
+import { ethGasPrice } from "../methods/index.js";
 import { assertSuccess, sendRpcRequest } from "../utils/rpc.js";
 import { regularBenchmarkParams } from "../utils/benchmark_params.js";
 
