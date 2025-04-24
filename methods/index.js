@@ -463,9 +463,3 @@ export const allMethods = [
   ethGetCode,
   filecoinStateMinerAvailableBalance,
 ];
-
-export const buggyMethods = [
-  // filecoinStateReadState, // --------ERRORS, bug, reported
-  // filecoinStateGetActor, // --------ERRORS, bug, reported
-  // filecoinGetActorEventsRaw, // --------ERRORS, bug, reported, // TODO: Adjust params
-];
