@@ -71,7 +71,7 @@ export const ethGetLogs = {
 export const ethGetTransactionReceipt = {
   name: "eth_getTransactionReceipt",
   params: [
-    "0xfa73d74442d959727e49f2b6c4f2a8576f81fe0c9b1f04d100bccbeefb7e9e19",
+    "0xb0ccffb14e1e79f0b6c6ceec223bb4bbf6fc302ae76067f1f9225bae9d6f3fdc",
   ],
 };
 
@@ -110,8 +110,8 @@ export const filecoinStateReadState = {
   params: [
     "f01234",
     [
-      { "/": "bafy2bzacecggmht6w6f7zx3x4wcjldauapc2xgstc73bmvbwskox5qhubafds" },
-      { "/": "bafy2bzacebb2finjxrnn6hsq4xfuhcmnk5nzky5fgmqbopotwzqc3xykeub7c" }
+      { "/": "bafy2bzacec2pdpnwwznkbm44dl7ehuyqu5igtupo7r5ejgmvvnrjiywaauhaw" },
+      { "/": "bafy2bzaceb6dxlcrvo27q5zycy7tizq7n7nhf3bm7vrijm56lugxj6fpbbfs4" }
     ]
   ],
 };
@@ -126,7 +126,7 @@ export const ethGetTransactionByHash = {
 export const ethGetBlockReceipts = {
   name: "eth_getBlockReceipts",
   params: [
-    "0x1b4"
+    "0x4AD2BC"
   ],
 };
 
@@ -135,8 +135,10 @@ export const filecoinStateLookupID = {
   params: [
     "f01234",
     [
-      { "/": "bafy2bzacecggmht6w6f7zx3x4wcjldauapc2xgstc73bmvbwskox5qhubafds" },
-      { "/": "bafy2bzacebb2finjxrnn6hsq4xfuhcmnk5nzky5fgmqbopotwzqc3xykeub7c" }
+      { "/": "bafy2bzacebak24xr4mhruizuqcpm4uvwi7exmtubunaa4vactnh35nddpmi3g" },
+      { "/": "bafy2bzacedgqq2emhf6prrg4ae3erwmu7vfwnbcgpr6zctqwezwv4vay5mtbq" },
+      { "/": "bafy2bzaceb7pqruphtx4x6gxnj6zm2gfmz23xenjtzmbuy37sh5j5uektagua" },
+      { "/": "bafy2bzacedleiulhhsstkeb2uqdqxn4gomp6moxqxzqq6fdvft4rfbrkzj3hc" }
     ]
   ],
 };
@@ -154,7 +156,7 @@ export const filecoinChainGetParentReceipts = {
   name: "Filecoin.ChainGetParentReceipts",
   params: [
     {
-      "/": "bafy2bzacecp6xjixmincx7kyqmlgejr3ynp3uz2av4iwnnco6c7si23pfkop6"
+      "/": "bafy2bzaceaj6awy7caq3t52wfzmi4gvotb7hpdfgchuzwgpehvlpxrn7pcnku"
     }
   ],
 };
@@ -258,9 +260,13 @@ export const ethEstimateGas = {
 export const filecoinStateSearchMsg = {
   name: "Filecoin.StateSearchMsg",
   params: [
-    {
-      "/": "bafy2bzacea3wsdh6y3a36tb3skempjoxqpuyompjbmfeyf34fi3uy6uue42v4"
-    }
+    [
+      { "/": "bafy2bzacec2pdpnwwznkbm44dl7ehuyqu5igtupo7r5ejgmvvnrjiywaauhaw" },
+      { "/": "bafy2bzaceb6dxlcrvo27q5zycy7tizq7n7nhf3bm7vrijm56lugxj6fpbbfs4" }
+    ],
+    { "/": "bafy2bzacec3gjsesbbztd5qcchskbwvhixdyigrrbseztoisknh5t5alwpuua" },
+    3000,
+    true
   ]
 };
 
@@ -408,52 +414,58 @@ export const filecoinStateDecodeParams = {
 
 // All methods we have implemented in test scripts so far.
 export const allMethods = [
-  // filecoinStateMarketStorageDeal,
-  // ethChainId,
-  // ethCall, // --------TIMEOUT
-  // filecoinStateMinerInfo,
-  // filecoinChainHead,
-  // ethGetBalance,
-  // ethGetBlockByNumber,
-  // ethBlockNumber,
-  // ethGetLogs,
-  // ethGetTransactionReceipt,
-  // ethGetBlockByHash, // --------TIMEOUT
-  // filecoinChainGetTipSetByHeight,
-  // filecoinWalletBalance,
-  // filecoinStateMinerPartitions,
-  // filecoinStateReadState, // --------ERRORS
-  // ethGetTransactionByHash,
-  // ethGetBlockReceipts, // --------TIMEOUT
-  // filecoinStateLookupID, // --------ERRORS
-  // ethFeeHistory,
-  // filecoinChainGetParentReceipts, // --------ERRORS, bug, reported
-  // filecoinChainGetParentMessages,
-  // filecoinChainGetTipSet,
-  // netVersion,
-  // ethGetTransactionCount,
+  filecoinStateMarketStorageDeal,
+  ethChainId,
+  ethCall,
+  filecoinStateMinerInfo,
+  filecoinChainHead,
+  ethGetBalance,
+  ethGetBlockByNumber,
+  ethBlockNumber,
+  ethGetLogs,
+  ethGetTransactionReceipt,
+  ethGetBlockByHash,
+  filecoinChainGetTipSetByHeight,
+  filecoinWalletBalance,
+  filecoinStateMinerPartitions,
+  // filecoinStateReadState, // --------ERRORS, bug, reported
+  ethGetTransactionByHash,
+  ethGetBlockReceipts,
+  filecoinStateLookupID,
+  ethFeeHistory,
+  filecoinChainGetParentReceipts,
+  filecoinChainGetParentMessages,
+  filecoinChainGetTipSet,
+  netVersion,
+  ethGetTransactionCount,
   // filecoinStateGetActor, // --------ERRORS, bug, reported
-  // filecoinChainReadObj,
+  filecoinChainReadObj,
   // filecoinGetActorEventsRaw, // --------ERRORS, bug, reported, // TODO: Adjust params
-  // ethMaxPriorityFeePerGas,
-  // ethGasPrice,
-  // ethGetStorageAt,
-  // ethEstimateGas, // --------TIMEOUT
-  // filecoinStateSearchMsg, // --------ERRORS, bug, reported
-  // filecoinStateMinerPower,
-  // filecoinMsigGetAvailableBalance,
-  // filecoinStateMinerSectorCount,
-  // filecoinStateMinerSectors,
-  // filecoinChainGetGenesis,
-  // filecoinMsigGetPending,
-  // filecoinStateCall, // --------TIMEOUT
-  // web3ClientVersion,
-  // filecoinMpoolGetNonce,
-  // filecoinStateVerifiedClientStatus,
-  // filecoinEthGetMessageCidByTransactionHash,
-  // filecoinGasEstimateMessageGas, // --------TIMEOUT
-  // ethSyncing,
-  // filecoinStateNetworkName,
-  // ethGetCode,
-  // filecoinStateMinerAvailableBalance,
+  ethMaxPriorityFeePerGas,
+  ethGasPrice,
+  ethGetStorageAt,
+  ethEstimateGas,
+  filecoinStateSearchMsg,
+  filecoinStateMinerPower,
+  filecoinMsigGetAvailableBalance,
+  filecoinStateMinerSectorCount,
+  filecoinStateMinerSectors,
+  filecoinChainGetGenesis,
+  filecoinMsigGetPending,
+  filecoinStateCall,
+  web3ClientVersion,
+  filecoinMpoolGetNonce,
+  filecoinStateVerifiedClientStatus,
+  filecoinEthGetMessageCidByTransactionHash,
+  filecoinGasEstimateMessageGas,
+  ethSyncing,
+  filecoinStateNetworkName,
+  ethGetCode,
+  filecoinStateMinerAvailableBalance,
+];
+
+export const buggyMethods = [
+  // filecoinStateReadState, // --------ERRORS, bug, reported
+  // filecoinStateGetActor, // --------ERRORS, bug, reported
+  // filecoinGetActorEventsRaw, // --------ERRORS, bug, reported, // TODO: Adjust params
 ];
