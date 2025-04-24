@@ -26,7 +26,7 @@ export function sendRpcRequest(url, method) {
 }
 
 export function assertSuccess(response) {
-  check(response, {
+  return check(response, {
     "is status 200": (r) => r.status === 200,
     "is JSON-RPC without error": (r) => {
       const res = JSON.parse(r.body);
