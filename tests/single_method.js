@@ -1,5 +1,3 @@
-// import requests from '../methods/requests.json';
-
 import { assertSuccess, sendRpcRequest } from "../utils/rpc.js";
 import { regularBenchmarkParams } from "../utils/benchmark_params.js";
 
