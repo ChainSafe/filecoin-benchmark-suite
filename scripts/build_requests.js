@@ -1,4 +1,4 @@
-import { buildRequests, fetchRpcContext } from 'filecoin-requests-builder';
+import { buildRequests, fetchRpcContext } from '@chainsafe/filecoin-requests-builder';
 import fs from 'fs';
 
 const url = process.env.K6_RPC_URL || "http://localhost:2345/rpc/v1";
