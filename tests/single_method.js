@@ -5,14 +5,19 @@ const url = __ENV.K6_RPC_URL || "http://localhost:2345/rpc/v1";
 const method = __ENV.K6_METHOD || "eth_gasPrice";
 
 export let options = regularBenchmarkParams;
-const requests = await JSON.parse(open('../methods/requests.json'));
+const requests = JSON.parse(open('../methods/requests.json'));
 
 // the function that will be executed for each VU (virtual user)
-export default function () {  
-  if (!requests[method]) {
-    throw new Error(`Method ${method} is not supported`);
-  }
+export default function () {
+  try {
+    if (!requests[method]) {
+      throw new Error(`Method ${method} is not supported`);
+    }
 
-  const response = sendRpcRequest(url, method, requests[method].params);
-  assertSuccess(response);
+    const response = sendRpcRequest(url, method, requests[method].params);
+    assertSuccess(response);
+  } catch (error) {
+    console.error('Error processing requests:', error.message);
+    throw error;
+  }
 }
