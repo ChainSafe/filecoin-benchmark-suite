@@ -10,4 +10,7 @@ all-forest-local:
 all-lotus-local:
 	k6 run -e K6_RPC_URL=http://localhost:1234/rpc/v1 tests/all.js
 
-.PHONY: all-forest-cloud all-lotus-cloud all-forest-local all-lotus-local
+build-requests:
+	yarn build-requests
+
+.PHONY: all-forest-cloud all-lotus-cloud all-forest-local all-lotus-local build-requests
