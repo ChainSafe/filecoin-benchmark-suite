@@ -6,14 +6,31 @@ Implementation-agnostic benchmark for RPC
 
 This benchmarking suite requires [k6](https://grafana.com/docs/k6/latest/) installed on the host. Follow the instructions for your operating system. Alternatively, you can run them via Docker.
 
+## Methods Definitions
+
+Before running benchmarks, generate method definitions using the command:
+
+```bash
+K6_RPC_URL=http://localhost:2345/rpc/v1 yarn build-requests
+```
+
+It will generate real Filecoin and Ethereum JSON-RPC method definitions with up-to-date parameters from live chain state and will store them in the `methods/requests.json` file.
+Feel free to adjust parameters manually.
+
 ## Local benchmarks
 
 You can run the benchmarks fully locally. To do so, you will need a running Filecoin node; ensure it's synced.
 
-Sample benchmark run:
+Benchmark all supported methods:
 
 ```bash
-k6 run -e K6_TEST_URL=http://localhost:2345/rpc/v1 tests/all.js --duration 30s --vus 20
+k6 run -e K6_RPC_URL=http://localhost:2345/rpc/v1 tests/all.js --duration 30s --vus 20
+```
+
+Single method benchmark:
+
+```bash
+k6 run -e K6_RPC_URL=http://localhost:2345/rpc/v1 K6_METHOD=eth_gasPrice tests/single_method.js --duration 30s --vus 20
 ```
 
 ## Upload benchmarks to Grafana Cloud
@@ -21,7 +38,7 @@ k6 run -e K6_TEST_URL=http://localhost:2345/rpc/v1 tests/all.js --duration 30s -
 You can create a free account on Grafana Cloud (the free tier should suffice if you run the tests locally). Login with `k6 cloud login --token <token>`. Now, you can run the benchmarks locally but have them uploaded to your Grafana Cloud for visual inspection and comparisons.
 
 ```bash
-k6 cloud run -e K6_TEST_URL=http://localhost:2345/rpc/v1 --local-execution tests/top5.js
+k6 cloud run -e K6_RPC_URL=http://localhost:2345/rpc/v1 --local-execution tests/all.js
 ```
 
 ## Configuring benchmarks
@@ -30,10 +47,11 @@ Read about [k6 options](https://grafana.com/docs/k6/latest/using-k6/k6-options/)
 
 ## Environment variables
 
-| Name            | Description                 | Type | Default                        |
-| --------------- | --------------------------- | ---- | ------------------------------ |
-| `K6_TEST_URL`   | Node RPC endpoint           | URL  | `http://localhost:2345/rpc/v1` |
-| `K6_TEST_DEBUG` | Print additional debug info | bool | false                          |
+| Name            | Description                 | Type   | Default                        |
+| --------------- | --------------------------- | ------ | ------------------------------ |
+| `K6_RPC_URL`    | Node RPC endpoint           | URL    | `http://localhost:2345/rpc/v1` |
+| `K6_METHOD`     | Method to benchmark         | string | 'eth_gasPrice'                 |
+| `K6_TEST_DEBUG` | Print additional debug info | bool   | false                          |
 
 ## Pitfalls
 

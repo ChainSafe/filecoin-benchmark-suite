@@ -4,13 +4,16 @@
   "scripts": {
     "js-lint": "eslint  '**/*.js'",
     "js-fmt": "prettier --write '**/*.js'",
-    "js-fmt-check": "prettier --check '**/*.js'"
+    "js-fmt-check": "prettier --check '**/*.js'",
+    "build-requests": "node ./scripts/build_requests.js"
   },
   "keywords": [],
+  "type": "module",
   "author": "",
   "license": "MIT",
   "description": "",
   "devDependencies": {
+    "@chainsafe/filecoin-requests-builder": "^0.1.0",
     "@eslint/js": "^9.22.0",
     "@types/k6": "^0.57.1",
     "eslint": "^9.22.0",

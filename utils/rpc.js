@@ -1,11 +1,11 @@
 import http from "k6/http";
 import { check } from "k6";
 
-export function sendRpcRequest(url, method) {
+export function sendRpcRequest(url, method, params) {
   const payload = JSON.stringify({
     jsonrpc: "2.0",
-    method: method.name,
-    params: method.params,
+    method: method,
+    params: params,
     id: 2,
   });
   const headers = {
@@ -15,11 +15,11 @@ export function sendRpcRequest(url, method) {
   // Note: the tag is used to identify the request in the results, given all requests are hitting the same endpoint.
   const response = http.post(url, payload, {
     headers,
-    tags: { name: method.name },
+    tags: { name: method },
   });
 
   if (__ENV.K6_TEST_DEBUG === "true" || __ENV.K6_TEST_DEBUG === "1") {
-    console.log(`Response for ${method.name}: ${response.body}`);
+    console.log(`Response for ${method}: ${response.body}`);
   }
 
   return response;
