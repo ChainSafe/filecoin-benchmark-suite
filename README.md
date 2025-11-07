@@ -30,7 +30,7 @@ k6 run -e K6_RPC_URL=http://localhost:2345/rpc/v1 tests/all.js --duration 30s --
 Single method benchmark:
 
 ```bash
-k6 run -e K6_RPC_URL=http://localhost:2345/rpc/v1 K6_METHOD=eth_gasPrice tests/single_method.js --duration 30s --vus 20
+k6 run -e K6_RPC_URL=http://localhost:2345/rpc/v1 -e K6_METHOD=eth_gasPrice tests/single_method.js --duration 30s --vus 20
 ```
 
 ## Upload benchmarks to Grafana Cloud
