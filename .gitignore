@@ -9,3 +9,4 @@
 node_modules
 
 methods/requests.json
+*/**/.env
