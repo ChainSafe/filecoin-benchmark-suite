@@ -14,7 +14,7 @@
       "options": { "legend": { "displayMode": "list", "placement": "bottom" } },
       "targets": [
         {
-          "expr": "sum(rate(container_cpu_usage_seconds_total{container_label_com_docker_compose_service=\"$service\", image!=\"\"}[10s]))",
+          "expr": "sum(rate(container_cpu_usage_seconds_total{name=\"$service\"}[10s]))",
           "legendFormat": "cpu cores",
           "refId": "A"
         }
@@ -56,12 +56,12 @@
       "options": { "legend": { "displayMode": "list", "placement": "bottom" } },
       "targets": [
         {
-          "expr": "sum(rate(container_network_receive_bytes_total{container_label_com_docker_compose_service=\"$service\"}[10s]))",
+          "expr": "sum(rate(container_network_receive_bytes_total{name=\"$service\"}[10s]))",
           "legendFormat": "rx",
           "refId": "A"
         },
         {
-          "expr": "sum(rate(container_network_transmit_bytes_total{container_label_com_docker_compose_service=\"$service\"}[10s]))",
+          "expr": "sum(rate(container_network_transmit_bytes_total{name=\"$service\"}[10s]))",
           "legendFormat": "tx",
           "refId": "B"
         }
@@ -77,12 +77,12 @@
       "options": { "legend": { "displayMode": "list", "placement": "bottom" } },
       "targets": [
         {
-          "expr": "sum(rate(container_fs_reads_bytes_total{container_label_com_docker_compose_service=\"$service\"}[10s]))",
+          "expr": "sum(rate(container_fs_reads_bytes_total{name=\"$service\"}[10s]))",
           "legendFormat": "read",
           "refId": "A"
         },
         {
-          "expr": "sum(rate(container_fs_writes_bytes_total{container_label_com_docker_compose_service=\"$service\"}[10s]))",
+          "expr": "sum(rate(container_fs_writes_bytes_total{name=\"$service\"}[10s]))",
           "legendFormat": "write",
           "refId": "B"
         }
