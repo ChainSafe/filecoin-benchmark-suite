@@ -37,16 +37,15 @@ const toNum = (x) => (x == null || x === '') ? '' : String(Number(x));
 
 function readTrend(j, name) {
   const m = j.metrics?.[name];
-  if (!m?.values) return {};
+  if (!m) return {};
   
-  const v = m.values;
   return {
-    avg: toMs(v.avg),
-    min: toMs(v.min),
-    med: toMs(v.med),
-    max: toMs(v.max),
-    p90: toMs(v['p(90)']),
-    p95: toMs(v['p(95)']),
+    avg: toMs(m.avg),
+    min: toMs(m.min),
+    med: toMs(m.med),
+    max: toMs(m.max),
+    p90: toMs(m['p(90)']),
+    p95: toMs(m['p(95)']),
   };
 }
 function readCounter(j, name) {
