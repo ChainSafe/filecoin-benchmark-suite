@@ -100,6 +100,7 @@ for (const method of methodNames) {
     console.error(`k6 failed for ${method} (exit ${res.status}).`);
     if (res.stdout) console.error('[k6 stdout]\n' + res.stdout);
     if (res.stderr) console.error('[k6 stderr]\n' + res.stderr);
+    rows.push([JSON.stringify(method), ...Array(cols.length - 1).fill('')].join(','));
     continue;
   }
 
