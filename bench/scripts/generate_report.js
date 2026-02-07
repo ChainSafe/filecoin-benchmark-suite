@@ -19,8 +19,21 @@ const OUT_DIR = '.k6-summaries';
 
 fs.mkdirSync(OUT_DIR, { recursive: true });
 
-const raw = fs.readFileSync(METHODS_FILE, 'utf8');
-const methodsMap = JSON.parse(raw);
+let methodsMap;
+try {
+  const raw = fs.readFileSync(METHODS_FILE, 'utf8');
+  methodsMap = JSON.parse(raw);
+} catch (err) {
+  if (err && (err.code === 'ENOENT' || err instanceof SyntaxError)) {
+    console.error(
+      `Failed to load methods/requests.json from "${METHODS_FILE}".\n` +
+      'This file is generated and not committed to the repo.\n' +
+      'Please run "yarn build-requests" to generate it, then re-run this script.'
+    );
+    process.exit(1);
+  }
+  throw err;
+}
 const methodNames = Array.isArray(methodsMap) ? methodsMap : Object.keys(methodsMap);
 
 const cols = [
