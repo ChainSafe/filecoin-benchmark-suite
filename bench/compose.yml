@@ -210,6 +210,7 @@ volumes:
   lotus_data:
   lotus_proofs_cache:
   lotus_proofs_parent_cache:
+  lotus-proof-parameters:
 
 networks:
   bench-net:
