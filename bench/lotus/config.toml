@@ -3,11 +3,11 @@
   #
   # type: string
   # env var: LOTUS_API_LISTENADDRESS
-  ListenAddress = "/ip4/0.0.0.0/tcp/1234/http"
+  ListenAddress = "/ip4/0.0.0.0/tcp/${LOTUS_RPC_PORT}/http"
 
   # type: string
   # env var: LOTUS_API_REMOTELISTENADDRESS
-  RemoteListenAddress = "0.0.0.0:1234"
+  RemoteListenAddress = "0.0.0.0:${LOTUS_RPC_PORT}"
 
   # type: Duration
   # env var: LOTUS_API_TIMEOUT
