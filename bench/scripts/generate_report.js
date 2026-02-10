@@ -34,7 +34,7 @@ try {
   }
   throw err;
 }
-const methodNames = Array.isArray(methodsMap) ? methodsMap : Object.keys(methodsMap);
+const methodNames = Object.keys(methodsMap);
 
 const cols = [
   'method',
