@@ -67,7 +67,7 @@ services:
 
         apk add --no-cache aria2 ca-certificates
 
-        echo "$${SNAPSHOT_FILE}" > /snapshots/latest_mainnet.txt
+        echo "$${SNAPSHOT_FILE}" > /snapshots/latest_snapshot.txt
 
         if [ -s "/snapshots/$${SNAPSHOT_FILE}" ]; then
           echo "[snapshot] already present: /snapshots/$${SNAPSHOT_FILE}"
@@ -114,7 +114,7 @@ services:
       - |
         set -euxo pipefail
 
-        snap_name="$$(cat /snapshots/latest_mainnet.txt)"
+        snap_name="$$(cat /snapshots/latest_snapshot.txt)"
         test -n "$${snap_name}"
         test -s "/snapshots/$${snap_name}"
 
@@ -182,7 +182,7 @@ services:
       - |
         set -euxo pipefail
 
-        snap_name="$$(cat /snapshots/latest_mainnet.txt)"
+        snap_name="$$(cat /snapshots/latest_snapshot.txt)"
         test -n "$${snap_name}"
         test -s "/snapshots/$${snap_name}"
 

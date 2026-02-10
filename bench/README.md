@@ -150,7 +150,7 @@ docker compose --env-file .env --profile lotus up -d lotus
 
 - Snapshot filename is stored in:
   ```
-  /snapshots/latest_mainnet.txt
+  /snapshots/latest_snapshot.txt
   ```
 - If the file already exists → **no re-download**
 - Same snapshot volume is reused by Forest and Lotus
