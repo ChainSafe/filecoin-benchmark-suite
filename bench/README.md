@@ -49,7 +49,7 @@ bench/
 │
 ├─ scripts/
 │  └─ generate_report.js
-|  # TODO: taskset wrapper
+│  # TODO: taskset wrapper
 │
 └─ README.md
 ```
