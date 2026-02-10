@@ -6,7 +6,6 @@ services:
     restart: unless-stopped
     ports: ["8080:8080"]
     networks: [bench-net]
-    privileged: true
     volumes:
       - /:/rootfs:ro
       - /sys:/sys:ro
@@ -191,8 +190,8 @@ services:
         DATA_DIR="/var/lib/lotus"
 
         # Import snapshot if database is empty, doesn't exist, or REIMPORT_SNAPSHOT is enabled
-        # Check if the lotus database directory exists and has content
-        if [ "$${REIMPORT_SNAPSHOT:-0}" = "1" ] || [ ! -d "$$DATA_DIR" ] || [ -z "$$(ls -A "$$DATA_DIR" 2>/dev/null)" ]; then
+        # Check if the lotus database directory has actual database files
+        if [ "$${REIMPORT_SNAPSHOT:-0}" = "1" ] || [ ! -d "$$DATA_DIR/datastore" ]; then
           if [ "$${REIMPORT_SNAPSHOT:-0}" = "1" ]; then
             echo "REIMPORT_SNAPSHOT is enabled, forcing snapshot import..."
           else
