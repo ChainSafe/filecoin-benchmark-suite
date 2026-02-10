@@ -192,8 +192,8 @@ services:
 
         # Import snapshot if database is empty, doesn't exist, or REIMPORT_SNAPSHOT is enabled
         # Check if the lotus database directory exists and has content
-        if [ "${REIMPORT_SNAPSHOT:-0}" = "1" ] || [ ! -d "$$DATA_DIR" ] || [ -z "$$(ls -A "$$DATA_DIR" 2>/dev/null)" ]; then
-          if [ "${REIMPORT_SNAPSHOT:-0}" = "1" ]; then
+        if [ "$${REIMPORT_SNAPSHOT:-0}" = "1" ] || [ ! -d "$$DATA_DIR" ] || [ -z "$$(ls -A "$$DATA_DIR" 2>/dev/null)" ]; then
+          if [ "$${REIMPORT_SNAPSHOT:-0}" = "1" ]; then
             echo "REIMPORT_SNAPSHOT is enabled, forcing snapshot import..."
           else
             echo "Database not found or empty, importing snapshot..."
