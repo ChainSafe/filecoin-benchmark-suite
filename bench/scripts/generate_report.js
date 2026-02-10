@@ -34,7 +34,7 @@ try {
   }
   throw err;
 }
-const methodNames = Object.keys(methodsMap);
+const methodNames = Object.keys(methodsMap).sort();
 
 const cols = [
   'method',
