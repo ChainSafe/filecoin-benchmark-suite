@@ -1,0 +1,128 @@
+{
+  "annotations": { "list": [] },
+  "editable": true,
+  "fiscalYearStartMonth": 0,
+  "graphTooltip": 0,
+  "id": null,
+  "links": [],
+  "panels": [
+    {
+      "datasource": "Prometheus",
+      "fieldConfig": { "defaults": {}, "overrides": [] },
+      "gridPos": { "h": 8, "w": 12, "x": 0, "y": 0 },
+      "id": 1,
+      "options": { "legend": { "displayMode": "list", "placement": "bottom" } },
+      "targets": [
+        {
+          "expr": "sum(rate(container_cpu_usage_seconds_total{name=\"$service\"}[10s]))",
+          "legendFormat": "cpu cores",
+          "refId": "A"
+        }
+      ],
+      "title": "CPU (cores)",
+      "type": "timeseries"
+    },
+    {
+      "datasource": "Prometheus",
+      "fieldConfig": { "defaults": { "unit": "bytes" }, "overrides": [] },
+      "gridPos": { "h": 8, "w": 12, "x": 12, "y": 0 },
+      "id": 2,
+      "options": { "legend": { "displayMode": "list", "placement": "bottom" } },
+      "targets": [
+        {
+          "expr": "container_memory_usage_bytes{name=\"$service\"}",
+          "legendFormat": "usage",
+          "refId": "A"
+        },
+        {
+          "expr": "container_memory_rss{name=\"$service\"}",
+          "legendFormat": "rss",
+          "refId": "B"
+        },
+        {
+          "expr": "container_memory_cache{name=\"$service\"}",
+          "legendFormat": "cache",
+          "refId": "C"
+        }
+      ],
+      "title": "Memory (working set)",
+      "type": "timeseries"
+    },
+    {
+      "datasource": "Prometheus",
+      "fieldConfig": { "defaults": { "unit": "Bps" }, "overrides": [] },
+      "gridPos": { "h": 8, "w": 12, "x": 0, "y": 8 },
+      "id": 3,
+      "options": { "legend": { "displayMode": "list", "placement": "bottom" } },
+      "targets": [
+        {
+          "expr": "sum(rate(container_network_receive_bytes_total{name=\"$service\"}[10s]))",
+          "legendFormat": "rx",
+          "refId": "A"
+        },
+        {
+          "expr": "sum(rate(container_network_transmit_bytes_total{name=\"$service\"}[10s]))",
+          "legendFormat": "tx",
+          "refId": "B"
+        }
+      ],
+      "title": "Network (rx/tx)",
+      "type": "timeseries"
+    },
+    {
+      "datasource": "Prometheus",
+      "fieldConfig": { "defaults": { "unit": "Bps" }, "overrides": [] },
+      "gridPos": { "h": 8, "w": 12, "x": 12, "y": 8 },
+      "id": 4,
+      "options": { "legend": { "displayMode": "list", "placement": "bottom" } },
+      "targets": [
+        {
+          "expr": "sum(rate(container_fs_reads_bytes_total{name=\"$service\"}[10s]))",
+          "legendFormat": "read",
+          "refId": "A"
+        },
+        {
+          "expr": "sum(rate(container_fs_writes_bytes_total{name=\"$service\"}[10s]))",
+          "legendFormat": "write",
+          "refId": "B"
+        }
+      ],
+      "title": "Filesystem IO (read/write)",
+      "type": "timeseries"
+    }
+  ],
+  "refresh": "5s",
+  "schemaVersion": 39,
+  "templating": {
+    "list": [
+      {
+        "allValue": null,
+        "current": { "selected": true, "text": "forest", "value": "forest" },
+        "datasource": null,
+        "definition": "",
+        "hide": 0,
+        "includeAll": false,
+        "label": "compose service",
+        "multi": false,
+        "name": "service",
+        "options": [
+          { "selected": true, "text": "forest", "value": "forest" },
+          { "selected": false, "text": "lotus", "value": "lotus" }
+        ],
+        "query": "forest,lotus",
+        "queryType": "",
+        "refresh": 0,
+        "regex": "",
+        "skipUrlSync": false,
+        "sort": 0,
+        "type": "custom"
+      }
+    ]
+  },
+  "time": { "from": "now-15m", "to": "now" },
+  "timepicker": {},
+  "timezone": "",
+  "title": "Node Container Resources (cAdvisor)",
+  "uid": "filecoin-node-resources",
+  "version": 1
+}

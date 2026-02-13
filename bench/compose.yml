@@ -1,0 +1,218 @@
+services:
+  cadvisor:
+    image: gcr.io/cadvisor/cadvisor:v0.55.1
+    container_name: cadvisor
+    cpuset: "${AUX_CPUSET}"
+    restart: unless-stopped
+    ports: ["8080:8080"]
+    networks: [bench-net]
+    volumes:
+      - /:/rootfs:ro
+      - /sys:/sys:ro
+      - /var/run:/var/run:rw
+      - /var/lib/docker:/var/lib/docker:ro
+      - /var/run/docker.sock:/var/run/docker.sock:ro
+
+  prometheus:
+    image: prom/prometheus
+    container_name: prometheus
+    cpuset: "${AUX_CPUSET}"
+    restart: unless-stopped
+    ports: ["9090:9090"]
+    networks: [bench-net]
+    command:
+      - "--config.file=/etc/prometheus/prometheus.yml"
+      - "--storage.tsdb.path=/prometheus"
+      - "--web.enable-lifecycle"
+    volumes:
+      - ./prometheus/prometheus.yml:/etc/prometheus/prometheus.yml:ro
+      - prometheus_data:/prometheus
+
+  grafana:
+    image: grafana/grafana
+    container_name: grafana
+    cpuset: "${AUX_CPUSET}"
+    restart: unless-stopped
+    depends_on: [prometheus]
+    ports: ["3000:3000"]
+    networks: [bench-net]
+    volumes:
+      - ./grafana/provisioning/:/etc/grafana/provisioning
+      - ./grafana/dashboards/:/etc/grafana/provisioning/dashboard-definitions
+      - grafana_data:/var/lib/grafana
+
+  snapshot-downloader:
+    image: alpine:3.23
+    container_name: snapshot-downloader
+    cpuset: "${AUX_CPUSET}"
+    restart: "no"
+    networks: [bench-net]
+    environment:
+      LATEST_SNAPSHOT_URL: ${LATEST_SNAPSHOT_URL}
+      SNAPSHOT_FILE: ${SNAPSHOT_FILE:-latest-mainnet.car.zst}
+      ARIA2_CONN: ${ARIA2_CONN:-5}
+    volumes:
+      - snapshots:/snapshots
+    command:
+      - /bin/sh
+      - -lc
+      - |
+        set -eu
+        echo "[snapshot] start"
+        echo "[snapshot] URL=$${LATEST_SNAPSHOT_URL}"
+        echo "[snapshot] FILE=$${SNAPSHOT_FILE}"
+        echo "[snapshot] ARIA2_CONN=$${ARIA2_CONN}"
+        : "$${LATEST_SNAPSHOT_URL:?LATEST_SNAPSHOT_URL is not set}"
+
+        apk add --no-cache aria2 ca-certificates
+
+        echo "$${SNAPSHOT_FILE}" > /snapshots/latest_snapshot.txt
+
+        if [ -s "/snapshots/$${SNAPSHOT_FILE}" ]; then
+          echo "[snapshot] already present: /snapshots/$${SNAPSHOT_FILE}"
+          ls -lh "/snapshots/$${SNAPSHOT_FILE}"
+          exit 0
+        fi
+
+        echo "[snapshot] downloading..."
+        aria2c -x"$${ARIA2_CONN}" -s"$${ARIA2_CONN}" -k1M \
+          --summary-interval=5 \
+          --console-log-level=notice \
+          --show-console-readout=true \
+          -d /snapshots -o "$${SNAPSHOT_FILE}.part" "$${LATEST_SNAPSHOT_URL}"
+
+        mv "/snapshots/$${SNAPSHOT_FILE}.part" "/snapshots/$${SNAPSHOT_FILE}"
+        echo "[snapshot] done"
+        ls -lh "/snapshots/$${SNAPSHOT_FILE}"
+
+  forest:
+    profiles: ["forest"]
+    image: ${FOREST_IMAGE}
+    container_name: forest
+    cpuset: "${NODE_CPUSET}"
+    restart: unless-stopped
+    depends_on:
+      snapshot-downloader:
+        condition: service_completed_successfully
+    networks: [bench-net]
+    environment:
+      - FOREST_CHAIN_INDEXER_ENABLED=1
+      - FOREST_KEYSTORE_PHRASE=${FOREST_KEYSTORE_PHRASE}
+      - FOREST_RPC_PORT=${FOREST_RPC_PORT}
+      - FOREST_HEALTHZ_RPC_PORT=${FOREST_HEALTHZ_RPC_PORT}
+      - REIMPORT_SNAPSHOT=${REIMPORT_SNAPSHOT:-0}
+    ports:
+      - "${FOREST_RPC_PORT}:${FOREST_RPC_PORT}"
+      - "${FOREST_HEALTHZ_RPC_PORT}:${FOREST_HEALTHZ_RPC_PORT}"
+      - "${FOREST_P2P_LISTEN_PORT}:${FOREST_P2P_LISTEN_PORT}"
+    volumes:
+      - forest_data:/root/.local/share/forest
+      - snapshots:/snapshots:ro
+    entrypoint: ["/bin/bash", "-lc"]
+    command:
+      - |
+        set -euxo pipefail
+
+        snap_name="$$(cat /snapshots/latest_snapshot.txt)"
+        test -n "$${snap_name}"
+        test -s "/snapshots/$${snap_name}"
+
+        SNAP_PATH="/snapshots/$${snap_name}"
+        PART_PATH="/snapshots/$${snap_name}.part"
+        
+        DATA_DIR="/root/.local/share/forest"
+
+        while [ ! -s "$$SNAP_PATH" ] || [ -e "$$PART_PATH" ]; do
+          echo "Waiting for snapshot to be fully downloaded..."
+          sleep 5
+        done
+        echo "Snapshot is ready: $$SNAP_PATH"
+
+        # Import snapshot if database is empty, doesn't exist, or REIMPORT_SNAPSHOT is enabled
+        # Check if Forest car_db directory exists in any version (contains imported snapshots)
+        CHAIN_DB_DIR="$$DATA_DIR/${CHAIN}"
+        if [ "$${REIMPORT_SNAPSHOT:-0}" = "1" ] || [ ! -d "$$CHAIN_DB_DIR" ] || [ -z "$$(find "$$CHAIN_DB_DIR" -name "car_db" -type d 2>/dev/null)" ]; then
+          if [ "$${REIMPORT_SNAPSHOT:-0}" = "1" ]; then
+            echo "REIMPORT_SNAPSHOT is enabled, forcing snapshot import..."
+          else
+            echo "Database not found or empty, importing snapshot..."
+          fi
+          forest --chain ${CHAIN} --halt-after-import --import-snapshot "$$SNAP_PATH"
+          echo "Snapshot import completed successfully"
+        else
+          echo "Database already exists with content, skipping snapshot import"
+        fi
+
+        exec forest --chain ${CHAIN} \
+          --rpc-address 0.0.0.0:${FOREST_RPC_PORT} \
+          --healthcheck-address 0.0.0.0:${FOREST_HEALTHZ_RPC_PORT} \
+          --p2p-listen-address /ip4/0.0.0.0/tcp/${FOREST_P2P_LISTEN_PORT}
+
+  lotus:
+    profiles: ["lotus"]
+    image: ${LOTUS_IMAGE}
+    container_name: lotus
+    platform: linux/amd64
+    cpuset: "${NODE_CPUSET}"
+    restart: unless-stopped
+    depends_on:
+      snapshot-downloader:
+        condition: service_completed_successfully
+    networks: [bench-net]
+    environment:
+      LOTUS_BACKUP_BASE_PATH: /var/lib/lotus
+      FIL_PROOFS_PARAMETER_CACHE: /home/lotus/proofs_cache
+      FIL_PROOFS_PARENT_CACHE: /home/lotus/proofs_parent_cache
+      LOTUS_RPC_PORT: ${LOTUS_RPC_PORT}
+      LOTUS_API_LISTENADDRESS: "/ip4/0.0.0.0/tcp/${LOTUS_RPC_PORT}/http"
+      LOTUS_API_REMOTELISTENADDRESS: "0.0.0.0:${LOTUS_RPC_PORT}"
+      REIMPORT_SNAPSHOT: ${REIMPORT_SNAPSHOT:-0}
+    ports:
+      - "${LOTUS_RPC_PORT}:${LOTUS_RPC_PORT}"
+    volumes:
+      - ./lotus/config.toml:/var/lib/lotus/config.toml:ro
+      - lotus_data:/var/lib/lotus
+      - lotus-proof-parameters:/var/tmp/filecoin-proof-parameters
+      - snapshots:/snapshots:ro
+      - lotus_proofs_cache:/home/lotus/proofs_cache
+      - lotus_proofs_parent_cache:/home/lotus/proofs_parent_cache
+    entrypoint: ["/bin/bash","-lc"]
+    command: 
+      - |
+        set -euxo pipefail
+
+        snap_name="$$(cat /snapshots/latest_snapshot.txt)"
+        test -n "$${snap_name}"
+        test -s "/snapshots/$${snap_name}"
+
+        SNAP_PATH="/snapshots/$${snap_name}"
+
+        DATA_DIR="/var/lib/lotus"
+
+        # Import snapshot if database is empty, doesn't exist, or REIMPORT_SNAPSHOT is enabled
+        # Check if the lotus database directory has actual database files
+        if [ "$${REIMPORT_SNAPSHOT:-0}" = "1" ] || [ ! -d "$$DATA_DIR/datastore" ]; then
+          if [ "$${REIMPORT_SNAPSHOT:-0}" = "1" ]; then
+            echo "REIMPORT_SNAPSHOT is enabled, forcing snapshot import..."
+          else
+            echo "Database not found or empty, importing snapshot..."
+          fi
+          exec lotus daemon --remove-existing-chain --import-snapshot "$$SNAP_PATH"
+        else
+          echo "Database already exists with content, starting daemon without import..."
+          exec lotus daemon
+        fi
+
+volumes:
+  prometheus_data:
+  grafana_data:
+  snapshots:
+  forest_data:
+  lotus_data:
+  lotus_proofs_cache:
+  lotus_proofs_parent_cache:
+  lotus-proof-parameters:
+
+networks:
+  bench-net:
+    name: bench-net
